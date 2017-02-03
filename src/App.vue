@@ -52,7 +52,7 @@
   </div>
 </template>
 <script>
-import Hello from './components/Hello'
+// import Hello from './components/Hello'
 import Firebase from 'firebase'
 import toastr from 'toastr'
 
@@ -84,23 +84,39 @@ export default {
     }
   },
 
+  computed: {
+    validation: function () {
+      return {
+        title: !!this.newBook.title.trim(),
+        author: !!this.newBook.author.trim()
+		// url:
+      }
+    },
+    isValid: function () {
+      var validation = this.validation
+      return Object.keys(validation).every(function (key) {
+        return validation[key]
+      })
+    }
+  },
+
    methods: {
       addBook: function () {
-        booksRef.push(this.newBook);
-        this.newBook.title = '';
-        this.newBook.author = '';
-        this.newBook.url = 'http://';
-		toastr.success('Book added successfully')
+		if (this.isValid) {
+		  booksRef.push(this.newBook);
+          this.newBook.title = '';
+          this.newBook.author = '';
+          this.newBook.url = 'http://';
+		  toastr.success('Book added successfully')
+	  	} else {
+		  	toastr.warning('The data is empty!')
+	  	}
       },
       removeBook: function (book) {
         booksRef.child(book['.key']).remove()
         toastr.success('Book removed successfully')
       }
-    },
-
-  components: {
-    Hello
-  }
+   }
 }
 </script>
 <style>
